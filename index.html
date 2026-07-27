@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Desk Reset &middot; AppADay 081</title>
+<meta name="description" content="A five-minute guided body-and-eye reset you can run without leaving your chair. Rotating seated stretches and a 20-20-20 eye rest, each with a calm countdown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#171a33;
+    --night-2:#232a52;
+    --dusk:#3a3f73;
+    --plum:#5a4470;
+    --horizon:#f0a868;
+    --horizon-2:#f6c98a;
+    --ember:#e8875a;
+    --mist:#f3ebe0;
+    --mist-dim:#bcb9d4;
+    --mint:#86d6c4;
+    --ring-track:rgba(243,235,224,0.13);
+    --surface:rgba(243,235,224,0.06);
+    --surface-line:rgba(243,235,224,0.16);
+    --accent:var(--horizon);
+    --glow:var(--horizon);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Nunito Sans',system-ui,sans-serif;
+    color:var(--mist);
+    background:linear-gradient(178deg,var(--night) 0%,var(--night-2) 42%,var(--dusk) 74%,var(--plum) 100%);
+    min-height:100dvh;
+    display:flex;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  .stage{
+    position:relative;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    max-width:560px;
+    margin:0 auto;
+    padding:14px 20px calc(18px + env(safe-area-inset-bottom));
+    min-height:100dvh;
+  }
+
+  /* breathing horizon glow */
+  .halo{
+    position:fixed;
+    left:50%;
+    bottom:-14vh;
+    width:min(150vw,860px);
+    height:min(150vw,860px);
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 50%,
+      color-mix(in srgb,var(--glow) 42%,transparent) 0%,
+      color-mix(in srgb,var(--glow) 16%,transparent) 34%,
+      transparent 62%);
+    filter:blur(6px);
+    pointer-events:none;
+    z-index:0;
+    animation:breathe 11s ease-in-out infinite;
+    transition:background .8s ease;
+  }
+  @keyframes breathe{
+    0%,100%{transform:translateX(-50%) scale(.92);opacity:.72}
+    50%{transform:translateX(-50%) scale(1.06);opacity:1}
+  }
+
+  .stage > *{position:relative;z-index:1}
+
+  /* top bar */
+  .bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    font-size:12.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--mist-dim);
+  }
+  .bar .mark{font-weight:700}
+  .bar .mark b{color:var(--mist);font-weight:700}
+  .bar a{color:var(--mist-dim);text-decoration:none;transition:color .2s}
+  .bar a:hover,.bar a:focus-visible{color:var(--horizon-2)}
+  .bar-right{display:flex;align-items:center;gap:6px}
+  .iconbtn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:50%;
+    background:transparent;border:1px solid transparent;color:var(--mist-dim);
+    cursor:pointer;transition:color .2s,background .2s,border-color .2s;
+  }
+  .iconbtn:hover,.iconbtn:focus-visible{color:var(--mist);background:var(--surface);border-color:var(--surface-line)}
+  .iconbtn svg{width:19px;height:19px;display:block}
+  .iconbtn:focus-visible{outline:2px solid var(--horizon-2);outline-offset:2px}
+
+  /* screens */
+  .screen{flex:1;display:none;flex-direction:column}
+  .screen.on{display:flex}
+
+  /* ---- setup ---- */
+  #setup{justify-content:center;text-align:center;gap:26px;padding:8px 0}
+  .eyebrow{
+    font-size:12.5px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--horizon-2);font-weight:700;
+  }
+  h1{
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:500;
+    font-size:clamp(2.9rem,13vw,4.1rem);
+    line-height:.98;
+    letter-spacing:-.01em;
+  }
+  .lede{
+    max-width:33ch;margin:0 auto;
+    color:var(--mist-dim);
+    font-size:clamp(1rem,3.6vw,1.12rem);
+    line-height:1.55;
+  }
+  .lede b{color:var(--mist);font-weight:600}
+  .pick-label{
+    font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--mist-dim);margin-bottom:-8px;
+  }
+  .lengths{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .len{
+    flex:1;min-width:96px;max-width:150px;
+    background:var(--surface);
+    border:1px solid var(--surface-line);
+    border-radius:18px;
+    padding:18px 10px 15px;
+    color:var(--mist);cursor:pointer;
+    transition:border-color .2s,background .2s,transform .12s;
+    display:flex;flex-direction:column;gap:3px;align-items:center;
+  }
+  .len:hover{border-color:var(--horizon)}
+  .len:active{transform:scale(.98)}
+  .len:focus-visible{outline:2px solid var(--horizon-2);outline-offset:2px}
+  .len .n{font-family:'Fraunces',serif;font-size:2rem;line-height:1;font-weight:500}
+  .len .u{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist-dim)}
+  .len.sel{
+    border-color:var(--horizon);
+    background:linear-gradient(180deg,color-mix(in srgb,var(--horizon) 24%,transparent),color-mix(in srgb,var(--horizon) 8%,transparent));
+  }
+  .len.sel .u{color:var(--horizon-2)}
+
+  .begin{
+    align-self:center;
+    font-family:'Nunito Sans',sans-serif;
+    font-weight:700;font-size:1.08rem;letter-spacing:.02em;
+    color:var(--night);
+    background:linear-gradient(180deg,var(--horizon-2),var(--horizon));
+    border:none;border-radius:999px;
+    padding:16px 46px;cursor:pointer;
+    box-shadow:0 10px 30px -12px color-mix(in srgb,var(--horizon) 70%,transparent);
+    transition:transform .12s,box-shadow .2s,filter .2s;
+  }
+  .begin:hover{filter:brightness(1.04);box-shadow:0 14px 34px -12px color-mix(in srgb,var(--horizon) 80%,transparent)}
+  .begin:active{transform:translateY(1px)}
+  .begin:focus-visible{outline:2px solid var(--mist);outline-offset:3px}
+  .fineprint{font-size:13px;color:var(--mist-dim);line-height:1.5;max-width:34ch;margin:0 auto}
+  .fineprint .dot{color:var(--mint)}
+
+  /* ---- active ---- */
+  #active{justify-content:space-between;padding-top:6px}
+  .seg-head{text-align:center;margin-top:8px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px}
+  .seg-kind{
+    font-size:12px;letter-spacing:.26em;text-transform:uppercase;font-weight:700;
+    color:var(--horizon-2);transition:color .5s;
+  }
+  .seg-name{
+    font-family:'Fraunces',Georgia,serif;font-weight:500;
+    font-size:clamp(2rem,8.5vw,2.9rem);line-height:1.02;letter-spacing:-.01em;
+  }
+  .seg-cue{
+    color:var(--mist-dim);line-height:1.55;
+    font-size:clamp(1rem,3.9vw,1.16rem);
+    max-width:30ch;margin:0 auto;min-height:3.1em;
+  }
+
+  .ring-wrap{
+    position:relative;
+    width:min(66vw,264px);height:min(66vw,264px);
+    margin:6px auto;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ring{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring .track{fill:none;stroke:var(--ring-track);stroke-width:9}
+  .ring .prog{
+    fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;
+    transition:stroke .5s ease,stroke-dashoffset .18s linear;
+    filter:drop-shadow(0 0 8px color-mix(in srgb,var(--accent) 55%,transparent));
+  }
+  .ring-num{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:1px;
+  }
+  .ring-num .num{
+    font-family:'Fraunces',serif;font-weight:400;
+    font-size:clamp(3.4rem,17vw,5rem);line-height:1;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  }
+  .ring-num .sec{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--mist-dim)}
+
+  .foot{display:flex;flex-direction:column;gap:16px;padding-top:4px}
+  .prog-row{display:flex;align-items:center;gap:12px}
+  .prog-bar{flex:1;height:5px;border-radius:999px;background:var(--ring-track);overflow:hidden}
+  .prog-fill{height:100%;width:0;background:linear-gradient(90deg,var(--ember),var(--horizon-2));border-radius:999px;transition:width .2s linear}
+  .prog-count{font-size:13px;color:var(--mist-dim);font-variant-numeric:tabular-nums;letter-spacing:.04em;white-space:nowrap}
+  .controls{display:flex;gap:12px}
+  .btn{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    font-family:'Nunito Sans',sans-serif;font-weight:700;font-size:1rem;
+    padding:15px 18px;border-radius:16px;cursor:pointer;
+    transition:transform .12s,background .2s,border-color .2s,color .2s;
+  }
+  .btn svg{width:18px;height:18px}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid var(--horizon-2);outline-offset:2px}
+  .btn-primary{color:var(--night);background:linear-gradient(180deg,var(--horizon-2),var(--horizon));border:none;flex:1.6}
+  .btn-primary:hover{filter:brightness(1.04)}
+  .btn-ghost{color:var(--mist);background:var(--surface);border:1px solid var(--surface-line)}
+  .btn-ghost:hover{border-color:var(--horizon)}
+
+  /* eye-rest theming */
+  .stage.is-eye{--accent:var(--mint);--glow:var(--mint)}
+  .stage.is-eye .seg-kind{color:var(--mint)}
+  .stage.is-eye .btn-primary{background:linear-gradient(180deg,color-mix(in srgb,var(--mint) 88%,white),var(--mint))}
+
+  /* ---- done ---- */
+  #done{justify-content:center;text-align:center;gap:22px}
+  .done-mark{
+    width:76px;height:76px;margin:0 auto;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--horizon) 30%,transparent),transparent);
+    border:1px solid color-mix(in srgb,var(--horizon) 45%,transparent);
+  }
+  .done-mark svg{width:34px;height:34px;color:var(--horizon-2)}
+  #done h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(2.2rem,9vw,3rem);line-height:1.02}
+  .done-sub{color:var(--mist-dim);max-width:32ch;margin:0 auto;line-height:1.55;font-size:clamp(1rem,3.8vw,1.12rem)}
+  .done-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+  .done-btns .btn{flex:0 1 auto;min-width:150px}
+
+  @media (prefers-reduced-motion: reduce){
+    .halo{animation:none}
+    .ring .prog{transition:stroke .5s ease}
+  }
+  @media (max-height:640px){
+    .seg-head{min-height:96px}
+    .ring-wrap{width:min(52vw,210px);height:min(52vw,210px)}
+    #setup{gap:20px}
+  }
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <header class="bar">
+    <span class="mark">081 &middot; <b>Desk Reset</b></span>
+    <span class="bar-right">
+      <button class="iconbtn" id="mute" type="button" aria-label="Mute sounds" aria-pressed="false"></button>
+      <a href="https://augustineiacopelli.github.io/appaday/" aria-label="Back to AppADay portfolio">AppADay</a>
+    </span>
+  </header>
+
+  <!-- SETUP -->
+  <section class="screen on" id="setup" aria-label="Choose your reset">
+    <div>
+      <p class="eyebrow">Five minutes, in your chair</p>
+      <h1>Desk<br>Reset</h1>
+    </div>
+    <p class="lede">A guided reset for a stiff body and tired eyes. Rotating seated stretches and a <b>20-20-20</b> eye break, one calm cue at a time.</p>
+    <p class="pick-label">Routine length</p>
+    <div class="lengths" id="lengths" role="group" aria-label="Routine length">
+      <button class="len" data-len="3" type="button"><span class="n">3</span><span class="u">min</span></button>
+      <button class="len" data-len="5" type="button"><span class="n">5</span><span class="u">min</span></button>
+      <button class="len" data-len="8" type="button"><span class="n">8</span><span class="u">min</span></button>
+    </div>
+    <button class="begin" id="begin" type="button">Begin reset</button>
+    <p class="fineprint"><span class="dot">&#9679;</span> No standing required. Just follow the cues and breathe.</p>
+  </section>
+
+  <!-- ACTIVE -->
+  <section class="screen" id="active" aria-label="Reset in progress">
+    <div class="seg-head">
+      <p class="seg-kind" id="segKind">Stretch</p>
+      <h2 class="seg-name" id="segName" aria-live="polite">Neck Release</h2>
+    </div>
+    <p class="seg-cue" id="segCue">Drop your right ear toward your shoulder.</p>
+
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 320 320" aria-hidden="true">
+        <circle class="track" cx="160" cy="160" r="144"></circle>
+        <circle class="prog" id="ringProg" cx="160" cy="160" r="144"></circle>
+      </svg>
+      <div class="ring-num">
+        <span class="num" id="count">40</span>
+        <span class="sec">seconds</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="prog-row">
+        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+        <span class="prog-count" id="segCount">1 / 7</span>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" id="pause" type="button" aria-label="Pause"></button>
+        <button class="btn btn-ghost" id="skip" type="button" aria-label="Skip to next">Skip</button>
+        <button class="btn btn-ghost" id="end" type="button" aria-label="End reset">End</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen" id="done" aria-label="Reset complete">
+    <div class="done-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h2>Reset complete</h2>
+    <p class="done-sub" id="doneSub">Your body loosened and your eyes rested. Ease back into it.</p>
+    <div class="done-btns">
+      <button class="btn btn-primary" id="again" type="button">Run it again</button>
+      <button class="btn btn-ghost" id="change" type="button">Change length</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- persistence (guarded) ----
+  var store = {
+    get:function(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:v; }catch(e){ return d; } },
+    set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  };
+
+  // ---- content ----
+  var SETTLE = {name:"Settle In", kind:"Settle", cue:"Sit tall, feet flat, hands resting. Breathe in slowly, then out. Let your shoulders fall.", secs:25, type:"settle"};
+  var EYE = {name:"Eye Rest", kind:"20-20-20", cue:"Look at something about 20 feet away. Soften your gaze, blink slowly, and let your eyes drift to the far distance.", secs:20, type:"eye"};
+  var STRETCHES = [
+    {name:"Neck Release", cue:"Drop your right ear toward your shoulder. Breathe into it, then switch sides halfway.", secs:40},
+    {name:"Shoulder Rolls", cue:"Roll both shoulders slowly backward in big, easy circles.", secs:30},
+    {name:"Seated Twist", cue:"Sit tall, hand on the opposite knee, and gently turn to look behind you. Switch sides halfway.", secs:40},
+    {name:"Chest Opener", cue:"Clasp your hands behind you, lift your chest, and draw your shoulder blades together.", secs:30},
+    {name:"Wrist Circles", cue:"Extend your arms and circle your wrists slowly. Reverse direction halfway.", secs:30},
+    {name:"Seated Cat-Cow", cue:"Exhale and round your back. Inhale and open your chest. Move with your breath.", secs:40},
+    {name:"Ankle Circles", cue:"Lift one foot and trace slow circles with your ankle. Switch feet halfway.", secs:30},
+    {name:"Overhead Reach", cue:"Interlace your fingers, turn your palms to the ceiling, and reach up tall.", secs:30},
+    {name:"Side Bend", cue:"Reach one arm overhead and lean gently to the side. Switch sides halfway.", secs:40},
+    {name:"Blade Squeeze", cue:"Bend your elbows and pull them back, squeezing your shoulder blades. Release slowly.", secs:30},
+    {name:"Seated Fold", cue:"Hinge at the hips and let your upper body drape toward your legs. Let your head hang heavy.", secs:40},
+    {name:"Jaw & Brow Release", cue:"Unclench your jaw, let your tongue rest, and smooth the space between your brows.", secs:25}
+  ];
+  STRETCHES.forEach(function(s){ s.kind="Stretch"; s.type="stretch"; });
+
+  // ---- routine builder ----
+  function shuffle(a){
+    a = a.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function buildRoutine(totalSecs){
+    var budget = totalSecs - SETTLE.secs - EYE.secs;
+    var pool = shuffle(STRETCHES);
+    var pi = 0, chosen = [];
+    while(budget > 14){
+      if(pi >= pool.length){
+        var next = shuffle(pool);
+        if(chosen.length && next[0].name === chosen[chosen.length-1].name) next.push(next.shift());
+        pool = next; pi = 0;
+      }
+      var s = pool[pi++];
+      chosen.push(s);
+      budget -= s.secs;
+    }
+    if(!chosen.length) chosen.push(pool[0]);
+    var mid = Math.floor(chosen.length/2);
+    return [SETTLE].concat(chosen.slice(0,mid)).concat([EYE]).concat(chosen.slice(mid));
+  }
+
+  // ---- audio (gentle transition tone) ----
+  var actx = null, muted = store.get("deskreset.muted","0")==="1";
+  function initAudio(){
+    if(actx) return;
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) actx = new AC();
+    }catch(e){ actx = null; }
+  }
+  function tone(freq, dur){
+    if(muted || !actx) return;
+    try{
+      if(actx.state === "suspended") actx.resume();
+      var t = actx.currentTime;
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.12, t+0.04);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t); o.stop(t+dur+0.05);
+    }catch(e){}
+  }
+
+  // ---- elements ----
+  var $ = function(id){ return document.getElementById(id); };
+  var stage=$("stage"), scSetup=$("setup"), scActive=$("active"), scDone=$("done");
+  var lengths=$("lengths"), begin=$("begin");
+  var segKind=$("segKind"), segName=$("segName"), segCue=$("segCue");
+  var ringProg=$("ringProg"), count=$("count"), progFill=$("progFill"), segCount=$("segCount");
+  var pauseBtn=$("pause"), skipBtn=$("skip"), endBtn=$("end");
+  var againBtn=$("again"), changeBtn=$("change"), muteBtn=$("mute"), doneSub=$("doneSub");
+
+  // ring geometry
+  var R = 144, CIRC = 2*Math.PI*R;
+  ringProg.style.strokeDasharray = CIRC;
+  ringProg.style.strokeDashoffset = CIRC;
+
+  // ---- icons ----
+  var ICON = {
+    play:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+    pause:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+    sound:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
+    mute:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>'
+  };
+
+  // ---- state ----
+  var seq=[], idx=0, totalMs=0, cumBeforeMs=0;
+  var segTotalMs=0, segEndTs=0, pausedRemMs=0, running=false, raf=0;
+  var chosenLen = parseInt(store.get("deskreset.length","5"),10);
+  if([3,5,8].indexOf(chosenLen)<0) chosenLen=5;
+
+  function selectLength(n){
+    chosenLen = n;
+    store.set("deskreset.length", String(n));
+    var btns = lengths.querySelectorAll(".len");
+    for(var i=0;i<btns.length;i++){
+      var on = parseInt(btns[i].getAttribute("data-len"),10)===n;
+      btns[i].classList.toggle("sel", on);
+      btns[i].setAttribute("aria-pressed", on?"true":"false");
+    }
+  }
+
+  function show(screen){
+    [scSetup,scActive,scDone].forEach(function(s){ s.classList.toggle("on", s===screen); });
+  }
+
+  function applyMuteUI(){
+    muteBtn.innerHTML = muted ? ICON.mute : ICON.sound;
+    muteBtn.setAttribute("aria-pressed", muted?"true":"false");
+    muteBtn.setAttribute("aria-label", muted?"Unmute sounds":"Mute sounds");
+  }
+
+  function setPauseUI(){
+    pauseBtn.innerHTML = (running ? ICON.pause + "<span>Pause</span>" : ICON.play + "<span>Resume</span>");
+    pauseBtn.setAttribute("aria-label", running?"Pause":"Resume");
+  }
+
+  // ---- run ----
+  function startRoutine(){
+    initAudio();
+    seq = buildRoutine(chosenLen*60);
+    totalMs = seq.reduce(function(a,s){ return a+s.secs*1000; },0);
+    idx = 0; cumBeforeMs = 0;
+    show(scActive);
+    startSegment(0, true);
+  }
+
+  function startSegment(i, silent){
+    idx = i;
+    var s = seq[i];
+    cumBeforeMs = 0;
+    for(var k=0;k<i;k++) cumBeforeMs += seq[k].secs*1000;
+
+    segName.textContent = s.name;
+    segCue.textContent = s.cue;
+    segKind.textContent = s.kind;
+    segCount.textContent = (i+1) + " / " + seq.length;
+    stage.classList.toggle("is-eye", s.type==="eye");
+
+    segTotalMs = s.secs*1000;
+    segEndTs = Date.now() + segTotalMs;
+    running = true;
+    setPauseUI();
+    updateCount(segTotalMs);
+    updateRing(1);
+    updateOverall(0);
+    if(!silent) tone(s.type==="eye"?528:432, 0.5);
+    loop();
+  }
+
+  function updateCount(remMs){ count.textContent = Math.max(0, Math.ceil(remMs/1000)); }
+  function updateRing(frac){ ringProg.style.strokeDashoffset = CIRC*(1-Math.max(0,Math.min(1,frac))); }
+  function updateOverall(segElapsedMs){
+    var done = cumBeforeMs + segElapsedMs;
+    progFill.style.width = Math.max(0,Math.min(100,(done/totalMs)*100)) + "%";
+  }
+
+  function loop(){
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function tick(){
+      if(!running) return;
+      var rem = segEndTs - Date.now();
+      if(rem <= 0){
+        updateRing(0); updateCount(0); updateOverall(segTotalMs);
+        advance();
+        return;
+      }
+      updateCount(rem);
+      updateRing(rem/segTotalMs);
+      updateOverall(segTotalMs - rem);
+      raf = requestAnimationFrame(tick);
+    });
+  }
+
+  function advance(){
+    if(idx+1 >= seq.length){ finish(); return; }
+    startSegment(idx+1, false);
+  }
+
+  function finish(){
+    running = false;
+    cancelAnimationFrame(raf);
+    stage.classList.remove("is-eye");
+    tone(660, 0.7);
+    setTimeout(function(){ tone(880,0.9); }, 180);
+    var mins = chosenLen;
+    doneSub.textContent = "You gave yourself " + mins + " minutes to loosen up and let your eyes rest. Ease back into it gently.";
+    show(scDone);
+  }
+
+  function togglePause(){
+    if(scActive.classList.contains("on")===false) return;
+    if(running){
+      running = false;
+      pausedRemMs = segEndTs - Date.now();
+      cancelAnimationFrame(raf);
+    }else{
+      segEndTs = Date.now() + Math.max(0,pausedRemMs);
+      running = true;
+      loop();
+    }
+    setPauseUI();
+  }
+
+  function skip(){ if(scActive.classList.contains("on")){ running=true; advance(); } }
+  function endNow(){
+    running=false; cancelAnimationFrame(raf);
+    stage.classList.remove("is-eye");
+    show(scSetup);
+    selectLength(chosenLen);
+  }
+
+  // ---- wire up ----
+  lengths.addEventListener("click", function(e){
+    var b = e.target.closest(".len");
+    if(b) selectLength(parseInt(b.getAttribute("data-len"),10));
+  });
+  begin.addEventListener("click", startRoutine);
+  pauseBtn.addEventListener("click", togglePause);
+  skipBtn.addEventListener("click", skip);
+  endBtn.addEventListener("click", endNow);
+  againBtn.addEventListener("click", startRoutine);
+  changeBtn.addEventListener("click", endNow);
+  muteBtn.addEventListener("click", function(){
+    muted = !muted;
+    store.set("deskreset.muted", muted?"1":"0");
+    applyMuteUI();
+    if(!muted){ initAudio(); tone(432,0.3); }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.code==="Space" && scActive.classList.contains("on")){ e.preventDefault(); togglePause(); }
+    else if(e.key==="ArrowRight" && scActive.classList.contains("on")){ skip(); }
+    else if(e.key==="Enter" && scSetup.classList.contains("on")){ startRoutine(); }
+  });
+
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden && running && scActive.classList.contains("on")){
+      running=false; pausedRemMs=segEndTs-Date.now(); cancelAnimationFrame(raf); setPauseUI();
+    }
+  });
+
+  // init
+  applyMuteUI();
+  selectLength(chosenLen);
+})();
+</script>
+</body>
+</html>
