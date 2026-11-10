@@ -256,6 +256,9 @@
   .done-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px}
   .done-btns .btn{flex:0 1 auto;min-width:150px}
 
+  /* embedded inside another AppADay app (for example 166 on a Break) */
+  body.embed .bar a{display:none}
+
   @media (prefers-reduced-motion: reduce){
     .halo{animation:none}
     .ring .prog{transition:stroke .5s ease}
@@ -349,6 +352,21 @@
     get:function(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:v; }catch(e){ return d; } },
     set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
   };
+
+  // ---- embed mode (used when another AppADay app opens this one in a frame) ----
+  var qs = new URLSearchParams(location.search);
+  var EMBED = qs.get("embed")==="1" && window.parent !== window;
+  var EMBED_MIN = parseInt(qs.get("min"),10);
+  if([3,5,8].indexOf(EMBED_MIN)<0) EMBED_MIN = 0;
+  var postedLen = 0;
+  function post(type, extra){
+    if(!EMBED) return;
+    try{
+      var m = {source:"appaday-081", type:type, length:postedLen};
+      if(extra){ for(var k in extra) m[k] = extra[k]; }
+      window.parent.postMessage(m, location.origin);
+    }catch(e){}
+  }
 
   // ---- content ----
   var SETTLE = {name:"Settle In", kind:"Settle", cue:"Sit tall, feet flat, hands resting. Breathe in slowly, then out. Let your shoulders fall.", secs:25, type:"settle"};
@@ -445,10 +463,12 @@
   var segTotalMs=0, segEndTs=0, pausedRemMs=0, running=false, raf=0;
   var chosenLen = parseInt(store.get("deskreset.length","5"),10);
   if([3,5,8].indexOf(chosenLen)<0) chosenLen=5;
+  if(EMBED && EMBED_MIN) chosenLen = EMBED_MIN;
 
   function selectLength(n){
     chosenLen = n;
-    store.set("deskreset.length", String(n));
+    postedLen = n;
+    if(!EMBED) store.set("deskreset.length", String(n));
     var btns = lengths.querySelectorAll(".len");
     for(var i=0;i<btns.length;i++){
       var on = parseInt(btns[i].getAttribute("data-len"),10)===n;
@@ -543,6 +563,12 @@
     var mins = chosenLen;
     doneSub.textContent = "You gave yourself " + mins + " minutes to loosen up and let your eyes rest. Ease back into it gently.";
     show(scDone);
+    post("complete", {secs:Math.round(totalMs/1000)});
+  }
+
+  function leaveEmbed(){
+    running = false; cancelAnimationFrame(raf);
+    post("exit");
   }
 
   function togglePause(){
@@ -575,9 +601,9 @@
   begin.addEventListener("click", startRoutine);
   pauseBtn.addEventListener("click", togglePause);
   skipBtn.addEventListener("click", skip);
-  endBtn.addEventListener("click", endNow);
-  againBtn.addEventListener("click", startRoutine);
-  changeBtn.addEventListener("click", endNow);
+  endBtn.addEventListener("click", function(){ if(EMBED) leaveEmbed(); else endNow(); });
+  againBtn.addEventListener("click", function(){ if(EMBED) post("exit"); else startRoutine(); });
+  changeBtn.addEventListener("click", function(){ if(EMBED) startRoutine(); else endNow(); });
   muteBtn.addEventListener("click", function(){
     muted = !muted;
     store.set("deskreset.muted", muted?"1":"0");
@@ -589,6 +615,7 @@
     if(e.code==="Space" && scActive.classList.contains("on")){ e.preventDefault(); togglePause(); }
     else if(e.key==="ArrowRight" && scActive.classList.contains("on")){ skip(); }
     else if(e.key==="Enter" && scSetup.classList.contains("on")){ startRoutine(); }
+    else if(e.key==="Escape" && EMBED){ leaveEmbed(); }
   });
 
   document.addEventListener("visibilitychange", function(){
@@ -600,6 +627,14 @@
   // init
   applyMuteUI();
   selectLength(chosenLen);
+  if(EMBED){
+    document.body.classList.add("embed");
+    againBtn.textContent = "Back to Coach";
+    changeBtn.textContent = "Run it again";
+    endBtn.setAttribute("aria-label","End reset and go back");
+    post("ready");
+    if(qs.get("auto")!=="0") startRoutine();
+  }
 })();
 </script>
 </body>

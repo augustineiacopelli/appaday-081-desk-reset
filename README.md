@@ -21,6 +21,10 @@ Desk Reset walks you through a rotating set of simple seated stretches and a **2
 
 Space bar pauses and resumes, the right arrow skips to the next segment.
 
+## Embed mode
+
+Other AppADay apps can open Desk Reset in a frame with `?embed=1&auto=1&min=3|5|8`. In embed mode the routine starts at once, the length is not saved as your preference, and the app posts `ready`, `complete`, and `exit` messages to its parent on the same origin. Standing Desk Interval Coach (App 166) uses this during Breaks.
+
 ## Notes
 
 - Single-file vanilla HTML, CSS, and JavaScript. No frameworks, no build step.
